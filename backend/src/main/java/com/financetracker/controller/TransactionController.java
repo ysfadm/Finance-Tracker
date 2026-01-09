@@ -6,13 +6,12 @@ import com.financetracker.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -31,14 +30,9 @@ public class TransactionController {
     public ResponseEntity<ApiResponseDto<TransactionDto>> createTransaction(
             @RequestBody TransactionDto request,
             Authentication authentication) {
-        try {
-            TransactionDto transaction = transactionService.createTransaction(authentication.getName(), request);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ApiResponseDto.success(transaction, "Transaction created successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        TransactionDto transaction = transactionService.createTransaction(authentication.getName(), request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDto.success(transaction, "Transaction created successfully"));
     }
 
     @GetMapping
@@ -46,52 +40,32 @@ public class TransactionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Authentication authentication) {
-        try {
-            Page<TransactionDto> transactions = transactionService.getUserTransactions(
-                    authentication.getName(), page, size);
-            return ResponseEntity.ok(ApiResponseDto.success(transactions, "Transactions retrieved successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        Page<TransactionDto> transactions = transactionService.getUserTransactions(
+                authentication.getName(), page, size);
+        return ResponseEntity.ok(ApiResponseDto.success(transactions, "Transactions retrieved successfully"));
     }
 
     @GetMapping("/range")
     public ResponseEntity<ApiResponseDto<List<TransactionDto>>> getTransactionsByRange(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+            @RequestParam LocalDate start,
+            @RequestParam LocalDate end,
             Authentication authentication) {
-        try {
-            List<TransactionDto> transactions = transactionService.getTransactionsByDateRange(
-                    authentication.getName(), start, end);
-            return ResponseEntity.ok(ApiResponseDto.success(transactions, "Transactions retrieved successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        List<TransactionDto> transactions = transactionService.getTransactionsByDateRange(
+                authentication.getName(), start, end);
+        return ResponseEntity.ok(ApiResponseDto.success(transactions, "Transactions retrieved successfully"));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDto<TransactionDto>> updateTransaction(
             @PathVariable Long id,
             @RequestBody TransactionDto request) {
-        try {
-            TransactionDto transaction = transactionService.updateTransaction(id, request);
-            return ResponseEntity.ok(ApiResponseDto.success(transaction, "Transaction updated successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        TransactionDto transaction = transactionService.updateTransaction(id, request);
+        return ResponseEntity.ok(ApiResponseDto.success(transaction, "Transaction updated successfully"));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponseDto<Void>> deleteTransaction(@PathVariable Long id) {
-        try {
-            transactionService.deleteTransaction(id);
-            return ResponseEntity.ok(ApiResponseDto.success(null, "Transaction deleted successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        transactionService.deleteTransaction(id);
+        return ResponseEntity.ok(ApiResponseDto.success(null, "Transaction deleted successfully"));
     }
 }

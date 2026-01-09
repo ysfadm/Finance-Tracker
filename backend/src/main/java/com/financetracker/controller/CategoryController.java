@@ -28,61 +28,36 @@ public class CategoryController {
     public ResponseEntity<ApiResponseDto<CategoryDto>> createCategory(
             @RequestBody CategoryDto request,
             Authentication authentication) {
-        try {
-            CategoryDto category = categoryService.createCategory(authentication.getName(), request);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ApiResponseDto.success(category, "Category created successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        CategoryDto category = categoryService.createCategory(authentication.getName(), request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDto.success(category, "Category created successfully"));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponseDto<List<CategoryDto>>> getCategories(Authentication authentication) {
-        try {
-            List<CategoryDto> categories = categoryService.getUserCategories(authentication.getName());
-            return ResponseEntity.ok(ApiResponseDto.success(categories, "Categories retrieved successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        List<CategoryDto> categories = categoryService.getUserCategories(authentication.getName());
+        return ResponseEntity.ok(ApiResponseDto.success(categories, "Categories retrieved successfully"));
     }
 
     @GetMapping("/type/{type}")
     public ResponseEntity<ApiResponseDto<List<CategoryDto>>> getCategoriesByType(
             @PathVariable String type,
             Authentication authentication) {
-        try {
-            List<CategoryDto> categories = categoryService.getCategoriesByType(authentication.getName(), type);
-            return ResponseEntity.ok(ApiResponseDto.success(categories, "Categories retrieved successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        List<CategoryDto> categories = categoryService.getCategoriesByType(authentication.getName(), type);
+        return ResponseEntity.ok(ApiResponseDto.success(categories, "Categories retrieved successfully"));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDto<CategoryDto>> updateCategory(
             @PathVariable Long id,
             @RequestBody CategoryDto request) {
-        try {
-            CategoryDto category = categoryService.updateCategory(id, request);
-            return ResponseEntity.ok(ApiResponseDto.success(category, "Category updated successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        CategoryDto category = categoryService.updateCategory(id, request);
+        return ResponseEntity.ok(ApiResponseDto.success(category, "Category updated successfully"));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponseDto<Void>> deleteCategory(@PathVariable Long id) {
-        try {
-            categoryService.deleteCategory(id);
-            return ResponseEntity.ok(ApiResponseDto.success(null, "Category deleted successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        categoryService.deleteCategory(id);
+        return ResponseEntity.ok(ApiResponseDto.success(null, "Category deleted successfully"));
     }
 }

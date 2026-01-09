@@ -28,42 +28,19 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponseDto<User>> register(@Valid @RequestBody RegisterRequestDto request) {
-        try {
-            User user = authService.register(request);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ApiResponseDto.success(user, "User registered successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        User user = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDto.success(user, "User registered successfully"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponseDto<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto request) {
-        try {
-            LoginResponseDto response = authService.login(request);
-            return ResponseEntity.ok(ApiResponseDto.success(response, "Login successful"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        LoginResponseDto response = authService.login(request);
+        return ResponseEntity.ok(ApiResponseDto.success(response, "Login successful"));
     }
 
     @GetMapping("/validate")
     public ResponseEntity<ApiResponseDto<String>> validateToken() {
         return ResponseEntity.ok(ApiResponseDto.success("Valid token", "Token is valid"));
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<ApiResponseDto<LoginResponseDto>> refreshToken() {
-        try {
-            // In production, implement proper refresh token logic
-            // This is a placeholder for token refresh
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
-                    .body(ApiResponseDto.error("Refresh token endpoint not yet implemented"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
     }
 }

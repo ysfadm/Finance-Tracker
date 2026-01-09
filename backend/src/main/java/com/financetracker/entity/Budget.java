@@ -23,7 +23,7 @@ public class Budget {
     private String name;
 
     @Column(nullable = false, precision = 15, scale = 2)
-    private java.math.BigDecimal limit;
+    private java.math.BigDecimal budgetLimit;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")

@@ -2,6 +2,7 @@ package com.financetracker.dto;
 
 import lombok.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -19,6 +20,6 @@ public class TransactionDto {
     private String type;
     private Long categoryId;
     private String categoryName;
-    private LocalDateTime transactionDate;
+    private LocalDate transactionDate;
     private LocalDateTime createdAt;
 }

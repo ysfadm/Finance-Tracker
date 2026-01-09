@@ -23,25 +23,15 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<ApiResponseDto<UserProfileDto>> getProfile(Authentication authentication) {
-        try {
-            UserProfileDto profile = userService.getUserProfile(authentication.getName());
-            return ResponseEntity.ok(ApiResponseDto.success(profile, "Profile retrieved successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        UserProfileDto profile = userService.getUserProfile(authentication.getName());
+        return ResponseEntity.ok(ApiResponseDto.success(profile, "Profile retrieved successfully"));
     }
 
     @PutMapping("/profile")
     public ResponseEntity<ApiResponseDto<UserProfileDto>> updateProfile(
             @RequestBody UserProfileDto request,
             Authentication authentication) {
-        try {
-            UserProfileDto profile = userService.updateProfile(authentication.getName(), request);
-            return ResponseEntity.ok(ApiResponseDto.success(profile, "Profile updated successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(ApiResponseDto.error(e.getMessage()));
-        }
+        UserProfileDto profile = userService.updateProfile(authentication.getName(), request);
+        return ResponseEntity.ok(ApiResponseDto.success(profile, "Profile updated successfully"));
     }
 }
