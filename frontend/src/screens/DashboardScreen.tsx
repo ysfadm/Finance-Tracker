@@ -11,6 +11,7 @@ import {
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import axios from "axios";
 import moment from "moment";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type DashboardNavigationProp = BottomTabNavigationProp<any, "Dashboard">;
 
@@ -42,8 +43,9 @@ export const DashboardScreen: React.FC<Props> = ({ navigation }) => {
   const fetchTransactions = async () => {
     setLoading(true);
     try {
+      const token = await AsyncStorage.getItem("authToken");
       const response = await axios.get("/transactions?page=0&size=10", {
-        headers: { Authorization: `Bearer ${global.authToken}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const txns = response.data.content || [];

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type LoginScreenNavigationProp = StackNavigationProp<any, "Login">;
 
@@ -56,8 +57,8 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
         { timeout: 10000 }
       );
 
-      // Store token in secure storage (use react-native-keychain in production)
-      global.authToken = response.data.token;
+      // Store token in secure storage
+      await AsyncStorage.setItem("authToken", response.data.token);
 
       Alert.alert("Success", "Login successful");
       navigation.replace("Dashboard");
@@ -78,7 +79,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.form}>
         <Text style={styles.label}>Email</Text>
         <TextInput
-          style={[styles.input, errors.email && styles.inputError]}
+          style={[styles.input, ...(errors.email ? [styles.inputError] : [])]}
           placeholder="Enter your email"
           keyboardType="email-address"
           value={email}
@@ -89,7 +90,10 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
         <Text style={styles.label}>Password</Text>
         <TextInput
-          style={[styles.input, errors.password && styles.inputError]}
+          style={[
+            styles.input,
+            ...(errors.password ? [styles.inputError] : []),
+          ]}
           placeholder="Enter your password"
           secureTextEntry
           value={password}

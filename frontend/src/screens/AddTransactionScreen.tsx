@@ -8,11 +8,10 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  Switch,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import DatePicker from "react-native-date-picker";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type TransactionNavigationProp = StackNavigationProp<any, "AddTransaction">;
 
@@ -36,7 +35,6 @@ export const AddTransactionScreen: React.FC<Props> = ({ navigation }) => {
   const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
   const [categoryId, setCategoryId] = useState("");
   const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -64,6 +62,7 @@ export const AddTransactionScreen: React.FC<Props> = ({ navigation }) => {
 
     setLoading(true);
     try {
+      const token = await AsyncStorage.getItem("authToken");
       const payload: CreateTransactionRequest = {
         title: title.trim(),
         description: description.trim(),
@@ -74,7 +73,7 @@ export const AddTransactionScreen: React.FC<Props> = ({ navigation }) => {
       };
 
       await axios.post("/transactions", payload, {
-        headers: { Authorization: `Bearer ${global.authToken}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       Alert.alert("Success", "Transaction created successfully");
@@ -134,7 +133,7 @@ export const AddTransactionScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.form}>
         <Text style={styles.label}>Title</Text>
         <TextInput
-          style={[styles.input, errors.title && styles.inputError]}
+          style={[styles.input, ...(errors.title ? [styles.inputError] : [])]}
           placeholder="Enter transaction title"
           value={title}
           onChangeText={setTitle}
@@ -144,7 +143,7 @@ export const AddTransactionScreen: React.FC<Props> = ({ navigation }) => {
 
         <Text style={styles.label}>Amount</Text>
         <TextInput
-          style={[styles.input, errors.amount && styles.inputError]}
+          style={[styles.input, ...(errors.amount ? [styles.inputError] : [])]}
           placeholder="Enter amount"
           keyboardType="decimal-pad"
           value={amount}
@@ -155,7 +154,10 @@ export const AddTransactionScreen: React.FC<Props> = ({ navigation }) => {
 
         <Text style={styles.label}>Category</Text>
         <TextInput
-          style={[styles.input, errors.categoryId && styles.inputError]}
+          style={[
+            styles.input,
+            ...(errors.categoryId ? [styles.inputError] : []),
+          ]}
           placeholder="Enter category ID"
           keyboardType="number-pad"
           value={categoryId}
@@ -166,15 +168,20 @@ export const AddTransactionScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.errorText}>{errors.categoryId}</Text>
         )}
 
-        <Text style={styles.label}>Date</Text>
-        <TouchableOpacity
-          style={styles.dateButton}
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text style={styles.dateButtonText}>
-            {date.toLocaleDateString()} {date.toLocaleTimeString()}
-          </Text>
-        </TouchableOpacity>
+        <Text style={styles.label}>Date (YYYY-MM-DD)</Text>
+        <TextInput
+          style={[styles.input, ...(errors.date ? [styles.inputError] : [])]}
+          placeholder="Enter date (YYYY-MM-DD)"
+          value={date.toISOString().split("T")[0]}
+          onChangeText={(dateStr) => {
+            const parsed = new Date(dateStr);
+            if (!isNaN(parsed.getTime())) {
+              setDate(parsed);
+            }
+          }}
+          editable={!loading}
+        />
+        {errors.date && <Text style={styles.errorText}>{errors.date}</Text>}
 
         <Text style={styles.label}>Description (Optional)</Text>
         <TextInput
@@ -199,17 +206,6 @@ export const AddTransactionScreen: React.FC<Props> = ({ navigation }) => {
           )}
         </TouchableOpacity>
       </View>
-
-      <DatePicker
-        modal
-        open={showDatePicker}
-        date={date}
-        onConfirm={(selectedDate) => {
-          setDate(selectedDate);
-          setShowDatePicker(false);
-        }}
-        onCancel={() => setShowDatePicker(false)}
-      />
     </ScrollView>
   );
 };
@@ -291,17 +287,6 @@ const styles = StyleSheet.create({
   textArea: {
     height: 100,
     textAlignVertical: "top",
-  },
-  dateButton: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    justifyContent: "center",
-  },
-  dateButtonText: {
-    fontSize: 16,
-    color: "#333",
   },
   button: {
     backgroundColor: "#3498db",

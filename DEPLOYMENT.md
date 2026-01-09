@@ -25,6 +25,7 @@ cp .env.example .env
 2. **Update Configuration**
 
 Edit `.env` with your settings:
+
 ```env
 DB_PASSWORD=secure_password_here
 JWT_SECRET=very_long_secret_key_minimum_32_chars
@@ -240,20 +241,20 @@ heroku run "java -jar app.jar --spring.jpa.hibernate.ddl-auto=create"
 ```yaml
 name: finance-tracker-api
 services:
-- name: backend
-  github:
-    repo: your-username/finance-tracker
-    branch: main
-  build_command: mvn clean package -DskipTests
-  run_command: java -jar backend/target/finance-tracker-api-*.jar
-  envs:
-  - key: DB_URL
-    scope: RUN_TIME
-    value: ${db.connection_string}
+  - name: backend
+    github:
+      repo: your-username/finance-tracker
+      branch: main
+    build_command: mvn clean package -DskipTests
+    run_command: java -jar backend/target/finance-tracker-api-*.jar
+    envs:
+      - key: DB_URL
+        scope: RUN_TIME
+        value: ${db.connection_string}
 databases:
-- name: db
-  engine: PG
-  version: "15"
+  - name: db
+    engine: PG
+    version: "15"
 ```
 
 ---
@@ -397,6 +398,7 @@ pg_dump -U postgres finance_tracker_db > backup.sql
 ### Performance Monitoring
 
 Monitor these metrics:
+
 - CPU Usage
 - Memory Usage
 - Database Query Time
