@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
+@SuppressWarnings("null")
 public class CategoryService {
 
     @Autowired
@@ -72,7 +73,8 @@ public class CategoryService {
     }
 
     public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+        Long categoryId = id;
+        categoryRepository.deleteById(categoryId);
     }
 
     private CategoryDto mapToDto(Category category) {

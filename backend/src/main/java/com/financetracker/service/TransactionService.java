@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
+@SuppressWarnings("null")
 public class TransactionService {
 
     @Autowired
@@ -89,7 +90,8 @@ public class TransactionService {
     }
 
     public void deleteTransaction(Long id) {
-        transactionRepository.deleteById(id);
+        Long transactionId = id;
+        transactionRepository.deleteById(transactionId);
     }
 
     private TransactionDto mapToDto(Transaction transaction) {

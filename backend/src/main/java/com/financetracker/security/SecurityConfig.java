@@ -1,6 +1,6 @@
 package com.financetracker.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,15 +20,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 /**
- * Security configuration for JWT authentication
+ * Security configuration for JWT authentication with hardened settings
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:8081}")
+    private String allowedOrigins;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(12);
     }
 
     @Bean
@@ -44,9 +47,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8081"));
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
@@ -57,17 +61,31 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .cors()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/public/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
+        http
+                // Disable CSRF for stateless API (using JWT)
+                .csrf(csrf -> csrf.disable())
+                
+                // Enable CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                
+                // Use stateless session management
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                
+                // Set security headers
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.deny())
+                        .xssProtection()
+                        .and()
+                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'")))
+                
+                // Configure authorization
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/public/**", "/auth/validate").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .anyRequest().authenticated())
+                
+                // Add JWT filter
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

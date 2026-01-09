@@ -53,4 +53,17 @@ public class AuthController {
     public ResponseEntity<ApiResponseDto<String>> validateToken() {
         return ResponseEntity.ok(ApiResponseDto.success("Valid token", "Token is valid"));
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponseDto<LoginResponseDto>> refreshToken() {
+        try {
+            // In production, implement proper refresh token logic
+            // This is a placeholder for token refresh
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+                    .body(ApiResponseDto.error("Refresh token endpoint not yet implemented"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDto.error(e.getMessage()));
+        }
+    }
 }

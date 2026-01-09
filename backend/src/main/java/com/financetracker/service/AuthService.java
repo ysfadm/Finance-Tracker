@@ -8,9 +8,6 @@ import com.financetracker.repository.UserRepository;
 import com.financetracker.security.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
+@SuppressWarnings("null")
 public class AuthService {
 
     @Autowired
@@ -26,9 +24,6 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -47,7 +42,8 @@ public class AuthService {
                 .active(true)
                 .build();
 
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        return saved;
     }
 
     public LoginResponseDto login(LoginRequestDto request) {
