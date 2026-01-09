@@ -1,6 +1,7 @@
 # Quick Start Guide - Finance Tracker
 
 ## Prerequisites
+
 - Java 21 LTS
 - Maven 3.9.12
 - Node.js 18+
@@ -11,6 +12,7 @@
 ## Local Development Setup
 
 ### 1. Backend Setup (Java 21)
+
 ```bash
 cd backend
 
@@ -24,12 +26,14 @@ mvn spring-boot:run
 ```
 
 **Backend Services**:
+
 - Auth Service: `/api/auth/*`
 - User Service: `/api/users/*`
 - Category Service: `/api/categories/*`
 - Transaction Service: `/api/transactions/*`
 
 ### 2. Database Setup (PostgreSQL)
+
 ```bash
 # Using PostgreSQL directly
 createdb finance_tracker
@@ -39,6 +43,7 @@ psql finance_tracker < database/schema.sql
 ```
 
 **Database Connection**:
+
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/finance_tracker
 spring.datasource.username=postgres
@@ -46,6 +51,7 @@ spring.datasource.password=your_password
 ```
 
 ### 3. Frontend Setup (React Native + TypeScript)
+
 ```bash
 cd frontend
 
@@ -74,6 +80,7 @@ npm run ios
 ## Docker Deployment
 
 ### Option 1: Docker Compose (Recommended for local testing)
+
 ```bash
 # Start all services (PostgreSQL, Backend, PgAdmin)
 docker-compose up -d
@@ -87,6 +94,7 @@ docker-compose down
 ```
 
 ### Option 2: Build Individual Docker Image
+
 ```bash
 # Build backend Docker image
 cd backend
@@ -104,6 +112,7 @@ docker run -p 8080:8080 \
 ## Environment Configuration
 
 ### Backend (`backend/src/main/resources/application.yml`)
+
 ```yaml
 server:
   port: 8080
@@ -119,6 +128,7 @@ spring:
 ```
 
 ### Frontend (`.env` file)
+
 ```bash
 REACT_APP_API_URL=http://localhost:8080/api
 REACT_APP_ENV=development
@@ -127,6 +137,7 @@ REACT_APP_ENV=development
 ## API Testing
 
 ### Using curl:
+
 ```bash
 # Register a user
 curl -X POST http://localhost:8080/api/auth/register \
@@ -169,6 +180,7 @@ curl -X POST http://localhost:8080/api/transactions \
 ```
 
 ### Using Postman:
+
 1. Import the provided Postman collection
 2. Set the `{{base_url}}` variable to `http://localhost:8080/api`
 3. Login to get a token and it will be automatically added to requests
@@ -176,6 +188,7 @@ curl -X POST http://localhost:8080/api/transactions \
 ## Build & Test
 
 ### Backend:
+
 ```bash
 cd backend
 
@@ -193,6 +206,7 @@ mvn spotbugs:check
 ```
 
 ### Frontend:
+
 ```bash
 cd frontend
 
@@ -209,12 +223,14 @@ npm test
 ## Deployment
 
 ### AWS Deployment
+
 ```bash
 # See DEPLOYMENT.md for detailed AWS deployment steps
 # Includes: EC2, RDS, and ALB setup
 ```
 
 ### Docker Hub Deployment
+
 ```bash
 # Tag and push to Docker Hub
 docker tag finance-tracker:latest username/finance-tracker:1.0
@@ -222,6 +238,7 @@ docker push username/finance-tracker:1.0
 ```
 
 ### Kubernetes Deployment
+
 ```bash
 # Apply Kubernetes manifests (if created)
 kubectl apply -f k8s/
@@ -232,6 +249,7 @@ kubectl get svc
 ## Troubleshooting
 
 ### Backend Issues:
+
 ```bash
 # Check if port 8080 is in use
 netstat -an | grep 8080
@@ -244,6 +262,7 @@ export JAVA_HOME=/path/to/java21
 ```
 
 ### Frontend Issues:
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -257,6 +276,7 @@ rm -rf node_modules/.cache
 ```
 
 ### Database Issues:
+
 ```bash
 # Connect to PostgreSQL
 psql -U postgres -d finance_tracker

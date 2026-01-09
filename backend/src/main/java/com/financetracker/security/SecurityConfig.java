@@ -74,8 +74,6 @@ public class SecurityConfig {
                 // Set security headers
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.deny())
-                        .xssProtection()
-                        .and()
                         .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'")))
                 
                 // Configure authorization
